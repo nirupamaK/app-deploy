@@ -1,4 +1,8 @@
 pipeline {
+    environment {
+    BUILD_SCRIPTS='my-test-pipeline'
+    BUILD_HOME='/var/lib/jenkins/workspace'
+    }
     agent none
     stages {
         stage ('Build') {
@@ -8,7 +12,7 @@ pipeline {
                 sh '''#!/bin/bash
                     git clone https://github.com/nirupamaK/app-deploy.git &
                     wait ;
-                    cd /var/lib/jenkins/workspace/my-test-pipeline
+                    cd $BUILD_HOME/$BUILD_SCRIPTS
                     sleep 2
                     sed -i 's/ALLOWED_HOSTS = ['*']/ALLOWED_HOSTS = ['*']/g' app-deploy/backend-challenge/challenge/settings.py
                     cd app-deploy/
@@ -24,7 +28,7 @@ pipeline {
                 echo 'Deploy stage, '
 
                 sh '''#!/bin/bash
-                    cd /var/lib/jenkins/workspace/my-test-pipeline
+                    cd cd $BUILD_HOME/$BUILD_SCRIPTS
                     sudo docker run --name my-backend-app -d -p 8000:8000  -i -t my-backend-app:latest
                     sudo docker run --name my-redis-server -d -p 6379:6379 redis:latest
                     echo "Deploy completed succressfully"
@@ -38,7 +42,7 @@ pipeline {
                 echo 'Test stage, '
 
                 sh '''#!/bin/bash
-                    cd /var/lib/jenkins/workspace/my-test-pipeline
+                    cd cd $BUILD_HOME/$BUILD_SCRIPTS
                     echo "Hello Test"
                     echo "Test completed succressfully"
                 '''
