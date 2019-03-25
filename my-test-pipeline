@@ -1,21 +1,17 @@
 pipeline {
     agent none
     stages {
-
         stage ('Build') {
             agent any
-
             steps {
                 echo 'Build stage, '
-
                 sh '''#!/bin/bash
-
-                    cd /opt/
-                    git clone git@github.com:nirupamaK/app-deploy.git
-                    cd app-deploy
-                    git clone git@github.com:nirupamaK/backend-challenge.git
-                    sleep 10
-                    sed -i 's/ALLOWED_HOSTS = ['*']/ALLOWED_HOSTS = ['*']/g' backend-challenge/challenge/settings.py
+                    git clone https://github.com/nirupamaK/app-deploy.git &
+                    wait ;
+                    cd /var/lib/jenkins/workspace/my-test-pipeline
+                    sleep 2
+                    sed -i 's/ALLOWED_HOSTS = ['*']/ALLOWED_HOSTS = ['*']/g' app-deploy/backend-challenge/challenge/settings.py
+                    cd app-deploy/
                     sudo docker build -t my-backend-app  .
                     echo "Build completed succressfully"
                 '''
@@ -28,23 +24,25 @@ pipeline {
                 echo 'Deploy stage, '
 
                 sh '''#!/bin/bash
-                    cd /opt/app-deploy/
+                    cd /var/lib/jenkins/workspace/my-test-pipeline
                     sudo docker run --name my-backend-app -d -p 8000:8000  -i -t my-backend-app:latest
                     sudo docker run --name my-redis-server -d -p 6379:6379 redis:latest
                     echo "Deploy completed succressfully"
                 '''
             }
-        }stage ('Test') {
+        }
+        stage ('Test') {
             agent any
 
             steps {
                 echo 'Test stage, '
 
                 sh '''#!/bin/bash
-                    cd /opt/app-deploy/
+                    cd /var/lib/jenkins/workspace/my-test-pipeline
                     echo "Hello Test"
                     echo "Test completed succressfully"
                 '''
             }
         }
+    }
 }
