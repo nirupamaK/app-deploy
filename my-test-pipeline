@@ -48,5 +48,19 @@ pipeline {
                 '''
             }
         }
+        stage ('Teardown') {
+            agent any
+            steps {
+                echo 'Teardown stage, '
+
+                sh '''#!/bin/bash
+                    cd $BUILD_HOME/$BUILD_SCRIPTS
+                    sudo docker rm -f my-backend-app
+                    sudo docker rm -f my-redis-server
+                    sudo docker rmi my-backend-app
+                    echo "Teardown completed succressfully"
+                '''
+            }
+        }
     }
 }
