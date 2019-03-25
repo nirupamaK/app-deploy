@@ -1,0 +1,50 @@
+pipeline {
+    agent none
+    stages {
+
+        stage ('Build') {
+            agent any
+
+            steps {
+                echo 'Build stage, '
+
+                sh '''#!/bin/bash
+
+                    cd /opt/
+                    git clone git@github.com:nirupamaK/app-deploy.git
+                    cd app-deploy
+                    git clone git@github.com:nirupamaK/backend-challenge.git
+                    sleep 10
+                    sed -i 's/ALLOWED_HOSTS = ['*']/ALLOWED_HOSTS = ['*']/g' backend-challenge/challenge/settings.py
+                    sudo docker build -t my-backend-app  .
+                    echo "Build completed succressfully"
+                '''
+            }
+        }
+        stage ('Deploy') {
+            agent any
+
+            steps {
+                echo 'Deploy stage, '
+
+                sh '''#!/bin/bash
+                    cd /opt/app-deploy/
+                    sudo docker run --name my-backend-app -d -p 8000:8000  -i -t my-backend-app:latest
+                    sudo docker run --name my-redis-server -d -p 6379:6379 redis:latest
+                    echo "Deploy completed succressfully"
+                '''
+            }
+        }stage ('Test') {
+            agent any
+
+            steps {
+                echo 'Test stage, '
+
+                sh '''#!/bin/bash
+                    cd /opt/app-deploy/
+                    echo "Hello Test"
+                    echo "Test completed succressfully"
+                '''
+            }
+        }
+}
