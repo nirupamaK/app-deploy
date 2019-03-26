@@ -23,12 +23,11 @@ pipeline {
         }
         stage ('Deploy') {
             agent any
-
             steps {
                 echo 'Deploy stage, '
 
                 sh '''#!/bin/bash
-                    cd cd $BUILD_HOME/$BUILD_SCRIPTS
+                    cd $BUILD_HOME/$BUILD_SCRIPTS
                     sudo docker run --name my-backend-app -d -p 8000:8000  -i -t my-backend-app:latest
                     sudo docker run --name my-redis-server -d -p 6379:6379 redis:latest
                     echo "Deploy completed succressfully"
@@ -37,13 +36,14 @@ pipeline {
         }
         stage ('Test') {
             agent any
-
             steps {
                 echo 'Test stage, '
 
                 sh '''#!/bin/bash
-                    cd cd $BUILD_HOME/$BUILD_SCRIPTS
-                    echo "Hello Test"
+                    cd $BUILD_HOME/$BUILD_SCRIPTS
+                    sudo pip3.6 install pytest
+                    sudo pip3.6 install pytest_docker_tools
+                    sudo pytest test_01.py
                     echo "Test completed succressfully"
                 '''
             }
@@ -52,9 +52,7 @@ pipeline {
             agent any
             steps {
                 echo 'Teardown stage, '
-
                 sh '''#!/bin/bash
-                    cd $BUILD_HOME/$BUILD_SCRIPTS
                     sudo docker rm -f my-backend-app
                     sudo docker rm -f my-redis-server
                     sudo docker rmi my-backend-app
