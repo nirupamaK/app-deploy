@@ -2,7 +2,7 @@
 * Docker for contanierzing applications
 * Jenkins for CI & CD pipeline
 * python3.6
-* pytest for running test cases.
+* pytest and pytest_docker_tools for running test cases.
 
 # Instruction to deploy app-deploy
 * A multi container application to deploy backend-challenge.
