@@ -41,9 +41,10 @@ pipeline {
 
                 sh '''#!/bin/bash
                     cd $BUILD_HOME/$BUILD_SCRIPTS
+                    cd app-deploy
                     sudo pip3.6 install pytest
                     sudo pip3.6 install pytest_docker_tools
-                    sudo pytest test_01.py
+                    sudo /usr/local/bin/pytest test_01.py
                     echo "Test completed succressfully"
                 '''
             }
